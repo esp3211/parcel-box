@@ -34,7 +34,7 @@ button:active{
 
 <button onclick="openBox()">🔓 เปิดกล่อง</button>
 
-<p id="status">⏳ Connecting...</p>
+<p id="status">⏳ กำลังเชื่อมต่อ...</p>
 
 <script>
 const statusEl = document.getElementById("status");
@@ -48,8 +48,8 @@ client.on("connect", ()=>{
 });
 
 function openBox(){
-  client.publish("parcel/open","OPEN");
-  statusEl.innerText = "📤 ส่งคำสั่งแล้ว";
+  client.publish("parcel/open", "OPEN");
+  statusEl.innerText = "📤 ส่งคำสั่งเปิดแล้ว";
 }
 </script>
 
