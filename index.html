@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>Parcel Box</title>
 
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
 <style>
 body{
   background:#111;
@@ -18,7 +20,6 @@ button{
   border-radius:25px;
   border:none;
   background:#00ff99;
-  cursor:pointer;
 }
 button:active{
   transform:scale(0.9);
@@ -33,31 +34,26 @@ button:active{
 <body>
 
 <h1>📦 กล่องรับพัสดุ</h1>
-<p>กดปุ่มเพื่อเปิดฝากล่อง</p>
+<p>กดเพื่อเปิดฝากล่อง</p>
 
 <button onclick="openBox()">🔓 เปิดกล่อง</button>
 
-<p id="status">⏳ พร้อมใช้งาน</p>
+<p id="status">⏳ กำลังเชื่อมต่อ MQTT...</p>
 
 <script>
-// ================== แก้ IP ESP ตรงนี้ ==================
-const ESP_IP = "192.168.1.61"; // ← เปลี่ยนให้ตรงกับ ESP ของคุณ
-// ======================================================
+const statusEl = document.getElementById("status");
 
+// 🔹 ต่อ MQTT ผ่าน WebSocket
+const client = mqtt.connect("wss://broker.hivemq.com:8000/mqtt");
+
+client.on("connect", ()=>{
+  statusEl.innerText = "✅ พร้อมใช้งาน";
+});
+
+// 🔹 กดปุ่ม → ส่ง MQTT
 function openBox(){
-  document.getElementById("status").innerText = "📤 ส่งคำสั่งแล้ว...";
-
-  fetch(`http://${ESP_IP}/open`)
-    .then(res=>{
-      if(res.ok){
-        document.getElementById("status").innerText = "✅ เปิดกล่องแล้ว";
-      }else{
-        document.getElementById("status").innerText = "❌ ESP ไม่ตอบสนอง";
-      }
-    })
-    .catch(err=>{
-      document.getElementById("status").innerText = "❌ ติดต่อ ESP ไม่ได้";
-    });
+  client.publish("parcel/open", "OPEN");
+  statusEl.innerText = "📤 ส่งคำสั่งเปิดแล้ว";
 }
 </script>
 
