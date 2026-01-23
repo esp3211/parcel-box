@@ -1,57 +1,18 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<title>Parcel Box</title>
-
-<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-
-<style>
-body{
-  background:#111;
-  color:white;
-  font-family:sans-serif;
-  text-align:center;
-  padding-top:80px;
-}
-button{
-  font-size:32px;
-  padding:30px 60px;
-  border-radius:25px;
-  border:none;
-  background:#00ff99;
-}
-button:active{
-  transform:scale(0.9);
-}
-</style>
-</head>
-
-<body>
-
-<h1>📦 กล่องรับพัสดุ</h1>
-<p>กดเพื่อเปิดฝากล่อง</p>
-
-<button onclick="openBox()">🔓 เปิดกล่อง</button>
-
-<p id="status">⏳ กำลังเชื่อมต่อ...</p>
-
 <script>
 const statusEl = document.getElementById("status");
 
+/* ✅ ใช้ WSS + พอร์ตถูก */
 const client = mqtt.connect(
-  "wss://broker.hivemq.com:8000/mqtt"
+  "wss://broker.hivemq.com:8884/mqtt"
 );
 
 client.on("connect", ()=>{
   statusEl.innerText = "✅ พร้อมใช้งาน";
 });
 
+/* ✅ topic + payload ตรง ESP */
 function openBox(){
-  client.publish("parcel/open", "OPEN");
+  client.publish("servo", "open");
   statusEl.innerText = "📤 ส่งคำสั่งเปิดแล้ว";
 }
 </script>
-
-</body>
-</html>
