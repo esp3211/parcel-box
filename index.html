@@ -1,18 +1,65 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Parcel Box</title>
+
+<style>
+body{
+  background:#111;
+  color:white;
+  font-family:sans-serif;
+  text-align:center;
+  padding-top:80px;
+}
+button{
+  font-size:32px;
+  padding:30px 60px;
+  border-radius:25px;
+  border:none;
+  background:#00ff99;
+  cursor:pointer;
+}
+button:active{
+  transform:scale(0.9);
+}
+#status{
+  margin-top:30px;
+  font-size:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📦 กล่องรับพัสดุ</h1>
+<p>กดปุ่มเพื่อเปิดฝากล่อง</p>
+
+<button onclick="openBox()">🔓 เปิดกล่อง</button>
+
+<p id="status">⏳ พร้อมใช้งาน</p>
+
 <script>
-const statusEl = document.getElementById("status");
+// ================== แก้ IP ESP ตรงนี้ ==================
+const ESP_IP = "192.168.1.61"; // ← เปลี่ยนให้ตรงกับ ESP ของคุณ
+// ======================================================
 
-/* ✅ ใช้ WSS + พอร์ตถูก */
-const client = mqtt.connect(
-  "wss://broker.hivemq.com:8884/mqtt"
-);
-
-client.on("connect", ()=>{
-  statusEl.innerText = "✅ พร้อมใช้งาน";
-});
-
-/* ✅ topic + payload ตรง ESP */
 function openBox(){
-  client.publish("servo", "open");
-  statusEl.innerText = "📤 ส่งคำสั่งเปิดแล้ว";
+  document.getElementById("status").innerText = "📤 ส่งคำสั่งแล้ว...";
+
+  fetch(`http://${ESP_IP}/open`)
+    .then(res=>{
+      if(res.ok){
+        document.getElementById("status").innerText = "✅ เปิดกล่องแล้ว";
+      }else{
+        document.getElementById("status").innerText = "❌ ESP ไม่ตอบสนอง";
+      }
+    })
+    .catch(err=>{
+      document.getElementById("status").innerText = "❌ ติดต่อ ESP ไม่ได้";
+    });
 }
 </script>
+
+</body>
+</html>
