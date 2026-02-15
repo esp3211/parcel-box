@@ -1,91 +1,4 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Parcel Locker</title>
-
-<!-- 🔹 โหลด MQTT Library -->
-<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-
-<style>
-body{
-    background:#0f172a;
-    font-family:sans-serif;
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    margin:0;
-}
-.card{
-    background:#1e293b;
-    padding:30px;
-    border-radius:20px;
-    width:300px;
-    text-align:center;
-    box-shadow:0 0 20px #00f2ff55;
-}
-input{
-    width:90%;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    margin-bottom:15px;
-    font-size:16px;
-    text-align:center;
-}
-button{
-    padding:12px 25px;
-    border:none;
-    border-radius:10px;
-    font-size:16px;
-    cursor:pointer;
-    background:#00c896;
-    color:white;
-}
-button:hover{
-    background:#00e0a8;
-}
-#result{
-    margin-top:15px;
-    font-weight:bold;
-}
-</style>
-</head>
-
-<body>
-
-<div class="card">
-    <h2>📦 กรอกเลขพัสดุ</h2>
-    <input type="text" id="parcelCode" placeholder="ใส่เลขพัสดุ">
-    <br>
-    <button onclick="checkParcel()">ยืนยัน</button>
-    <p id="result"></p>
-
-    <hr style="margin:20px 0; opacity:0.3;">
-
-    <button onclick="openBox()">🔓 เปิดกล่อง</button>
-    <p id="status">⏳ กำลังเชื่อมต่อ MQTT...</p>
-</div>
-
 <script>
-
-// 🔹 รหัสตัวอย่าง
-const correctCode = "1234";
-
-// 🔹 เช็คเลขพัสดุ
-function checkParcel(){
-    let input = document.getElementById("parcelCode").value;
-
-    if(input === correctCode){
-        document.getElementById("result").innerHTML = "✅ ถูกต้อง! กำลังสั่งเปิดกล่อง...";
-        openBox(); // ถ้าถูก → ส่ง MQTT เลย
-    }else{
-        document.getElementById("result").innerHTML = "❌ รหัสไม่ถูกต้อง";
-    }
-}
 
 // 🔹 ต่อ MQTT
 const statusEl = document.getElementById("status");
@@ -95,13 +8,20 @@ client.on("connect", ()=>{
     statusEl.innerText = "✅ พร้อมใช้งาน";
 });
 
-// 🔹 ส่งคำสั่งเปิดกล่อง
-function openBox(){
-    client.publish("parcel/open", "OPEN");
-    statusEl.innerText = "📤 ส่งคำสั่งเปิดแล้ว";
+// 🔹 ส่งเลขไปให้ ESP ตรวจ
+function checkParcel(){
+    let input = document.getElementById("parcelCode").value.trim();
+
+    if(input === ""){
+        document.getElementById("result").innerHTML = "⚠ กรุณากรอกเลขพัสดุ";
+        return;
+    }
+
+    // ส่งเลขไปที่ topic open
+    client.publish("open", input);
+
+    document.getElementById("result").innerHTML = 
+    "📤 ส่งเลขไปตรวจสอบแล้ว...";
 }
 
 </script>
-
-</body>
-</html>
