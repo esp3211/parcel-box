@@ -1,1 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Parcel Box</title>
+<style>
+body {
+  text-align: center;
+  font-family: Arial;
+  margin-top: 50px;
+}
+button {
+  font-size: 20px;
+  padding: 10px 20px;
+}
+input {
+  font-size: 20px;
+  padding: 5px;
+  text-align: center;
+}
+</style>
+</head>
+<body>
 
+<h2>Parcel Box</h2>
+
+<p>ใส่รหัสเพื่อเปิดกล่อง</p>
+
+<input type="password" id="pass">
+<br><br>
+<button onclick="check()">เปิดกล่อง</button>
+
+<p id="result"></p>
+
+<script>
+function check() {
+  var password = document.getElementById("pass").value;
+
+  if(password === "5678") {
+    document.getElementById("result").innerHTML = "✅ รหัสถูกต้อง กล่องเปิดแล้ว";
+  } else {
+    document.getElementById("result").innerHTML = "❌ รหัสผิด";
+  }
+}
+</script>
+
+</body>
+</html>
