@@ -2,39 +2,91 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>Parcel Box</title>
-
-<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parcel Locker</title>
 
 <style>
 body{
-  background:#111;
-  color:white;
-  font-family:sans-serif;
-  text-align:center;
-  padding-top:80px;
+    background:#0f172a;
+    font-family:sans-serif;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
 }
+
+.card{
+    background:#1e293b;
+    padding:30px;
+    border-radius:20px;
+    width:300px;
+    text-align:center;
+    box-shadow:0 0 20px #00f2ff55;
+}
+
+h2{
+    margin-bottom:20px;
+}
+
+input{
+    width:90%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    margin-bottom:15px;
+    font-size:16px;
+    text-align:center;
+}
+
 button{
-  font-size:32px;
-  padding:30px 60px;
-  border-radius:25px;
-  border:none;
-  background:#00ff99;
+    padding:12px 25px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    cursor:pointer;
+    background:#00c896;
+    color:white;
 }
-button:active{
-  transform:scale(0.9);
+
+button:hover{
+    background:#00e0a8;
 }
-#status{
-  margin-top:30px;
-  font-size:20px;
+
+#result{
+    margin-top:15px;
+    font-weight:bold;
 }
 </style>
 </head>
 
 <body>
 
-<h1>📦 กล่องรับพัสดุ</h1>
-<p>กดเพื่อเปิดฝากล่อง</p>
+<div class="card">
+    <h2>📦 กรอกเลขพัสดุ</h2>
+    <input type="text" id="parcelCode" placeholder="ใส่เลขพัสดุ">
+    <br>
+    <button onclick="checkParcel()">ยืนยัน</button>
+    <p id="result"></p>
+</div>
+
+<script>
+const correctCode = "1234"; // รหัสตัวอย่าง
+
+function checkParcel(){
+    let input = document.getElementById("parcelCode").value;
+
+    if(input === correctCode){
+        document.getElementById("result").innerHTML = "✅ ถูกต้อง! กล่องเปิดแล้ว";
+    }else{
+        document.getElementById("result").innerHTML = "❌ รหัสไม่ถูกต้อง";
+    }
+}
+</script>
+
+</body>
+</html>
 
 <button onclick="openBox()">🔓 เปิดกล่อง</button>
 
