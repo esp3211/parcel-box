@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Parcel Locker</title>
 
+<!-- 🔹 โหลด MQTT Library -->
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
 <style>
 body{
     background:#0f172a;
@@ -16,7 +19,6 @@ body{
     height:100vh;
     margin:0;
 }
-
 .card{
     background:#1e293b;
     padding:30px;
@@ -25,11 +27,6 @@ body{
     text-align:center;
     box-shadow:0 0 20px #00f2ff55;
 }
-
-h2{
-    margin-bottom:20px;
-}
-
 input{
     width:90%;
     padding:12px;
@@ -39,7 +36,6 @@ input{
     font-size:16px;
     text-align:center;
 }
-
 button{
     padding:12px 25px;
     border:none;
@@ -49,11 +45,9 @@ button{
     background:#00c896;
     color:white;
 }
-
 button:hover{
     background:#00e0a8;
 }
-
 #result{
     margin-top:15px;
     font-weight:bold;
@@ -69,44 +63,44 @@ button:hover{
     <br>
     <button onclick="checkParcel()">ยืนยัน</button>
     <p id="result"></p>
+
+    <hr style="margin:20px 0; opacity:0.3;">
+
+    <button onclick="openBox()">🔓 เปิดกล่อง</button>
+    <p id="status">⏳ กำลังเชื่อมต่อ MQTT...</p>
 </div>
 
 <script>
-const correctCode = "1234"; // รหัสตัวอย่าง
 
+// 🔹 รหัสตัวอย่าง
+const correctCode = "1234";
+
+// 🔹 เช็คเลขพัสดุ
 function checkParcel(){
     let input = document.getElementById("parcelCode").value;
 
     if(input === correctCode){
-        document.getElementById("result").innerHTML = "✅ ถูกต้อง! กล่องเปิดแล้ว";
+        document.getElementById("result").innerHTML = "✅ ถูกต้อง! กำลังสั่งเปิดกล่อง...";
+        openBox(); // ถ้าถูก → ส่ง MQTT เลย
     }else{
         document.getElementById("result").innerHTML = "❌ รหัสไม่ถูกต้อง";
     }
 }
-</script>
 
-</body>
-</html>
-
-<button onclick="openBox()">🔓 เปิดกล่อง</button>
-
-<p id="status">⏳ กำลังเชื่อมต่อ MQTT...</p>
-
-<script>
+// 🔹 ต่อ MQTT
 const statusEl = document.getElementById("status");
-
-// 🔹 ต่อ MQTT ผ่าน WebSocket
 const client = mqtt.connect("wss://broker.hivemq.com:8000/mqtt");
 
 client.on("connect", ()=>{
-  statusEl.innerText = "✅ พร้อมใช้งาน";
+    statusEl.innerText = "✅ พร้อมใช้งาน";
 });
 
-// 🔹 กดปุ่ม → ส่ง MQTT
+// 🔹 ส่งคำสั่งเปิดกล่อง
 function openBox(){
-  client.publish("parcel/open", "OPEN");
-  statusEl.innerText = "📤 ส่งคำสั่งเปิดแล้ว";
+    client.publish("parcel/open", "OPEN");
+    statusEl.innerText = "📤 ส่งคำสั่งเปิดแล้ว";
 }
+
 </script>
 
 </body>
