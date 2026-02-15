@@ -1,49 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>Parcel Box</title>
+<title>Smart Parcel Box</title>
+
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
 <style>
-body {
-  text-align: center;
-  font-family: Arial;
-  margin-top: 50px;
+body{
+  background:#111;
+  color:white;
+  font-family:sans-serif;
+  text-align:center;
+  margin-top:80px;
 }
-button {
-  font-size: 20px;
-  padding: 10px 20px;
+
+h1{
+  font-size:28px;
 }
-input {
-  font-size: 20px;
-  padding: 5px;
-  text-align: center;
+
+button{
+  font-size:22px;
+  padding:12px 25px;
+  border:none;
+  border-radius:8px;
+  background:#00c853;
+  color:white;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#00e676;
+}
+
+#status{
+  margin-top:30px;
+  font-size:18px;
+  color:#00e676;
 }
 </style>
 </head>
 <body>
 
-<h2>Parcel Box</h2>
+<h1>📦 Smart Parcel Box</h1>
 
-<p>ใส่รหัสเพื่อเปิดกล่อง</p>
+<button onclick="openBox()">🔓 เปิดกล่อง</button>
 
-<input type="password" id="pass">
-<br><br>
-<button onclick="check()">เปิดกล่อง</button>
-
-<p id="result"></p>
+<div id="status">กำลังเชื่อมต่อ MQTT...</div>
 
 <script>
-function check() {
-  var password = document.getElementById("pass").value;
 
-  if(password === "5678") {
-    document.getElementById("result").innerHTML = "✅ รหัสถูกต้อง กล่องเปิดแล้ว";
-  } else {
-    document.getElementById("result").innerHTML = "❌ รหัสผิด";
-  }
+const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
+
+client.on("connect", function () {
+  document.getElementById("status").innerHTML = "✅ เชื่อมต่อ MQTT แล้ว";
+});
+
+client.on("error", function () {
+  document.getElementById("status").innerHTML = "❌ MQTT Error";
+});
+
+function openBox() {
+
+  client.publish("open", "test");
+
+  document.getElementById("status").innerHTML =
+    "📡 ส่งคำสั่งเปิดกล่องแล้ว...";
 }
+
 </script>
 
 </body>
 </html>
-
