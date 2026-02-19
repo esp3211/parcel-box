@@ -42,89 +42,34 @@ button{
 button:hover{
   background:#00e676;
 }
-
-#status{
-  margin-top:30px;
-  font-size:18px;
-}
-
-.success{
-  color:#00e676;
-}
-
-.error{
-  color:#ff5252;
-}
-
-.wait{
-  color:#ffd740;
-}
 </style>
+
 </head>
 <body>
 
-<h1>📦 Smart Parcel Box</h1>
+<h1>Smart Parcel Box</h1>
 
-<input type="password" id="pass" placeholder="ใส่รหัส 4 หลัก">
-<br>
-<button onclick="openBox()">🔓 เปิดกล่อง</button>
-
-<div id="status" class="wait">กำลังเชื่อมต่อ MQTT...</div>
+<input type="text" id="codeInput" placeholder="ใส่รหัส"><br>
+<button onclick="sendCode()">ส่งรหัส</button>
 
 <script>
-
-const statusText = document.getElementById("status");
-
-// ===== MQTT Connect =====
 const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
 
 client.on("connect", function () {
-  statusText.innerHTML = "✅ เชื่อมต่อ MQTT แล้ว";
-  statusText.className = "success";
-
-  client.subscribe("parcel/status");
+    console.log("Connected to MQTT");
 });
 
-client.on("error", function () {
-  statusText.innerHTML = "❌ MQTT Error";
-  statusText.className = "error";
-});
+function sendCode(){
+    const code = document.getElementById("codeInput").value;
 
-// ===== รับผลจาก ESP =====
-client.on("message", function(topic, message) {
+    if(code === ""){
+        alert("กรุณาใส่รหัส");
+        return;
+    }
 
-  const msg = message.toString();
-
-  if(msg === "correct"){
-    statusText.innerHTML = "🔓 รหัสถูกต้อง กำลังเปิดกล่อง...";
-    statusText.className = "success";
-  }
-  else if(msg === "wrong"){
-    statusText.innerHTML = "❌ รหัสไม่ถูกต้อง";
-    statusText.className = "error";
-  }
-  else if(msg === "locked"){
-    statusText.innerHTML = "⛔ ระบบล็อกชั่วคราว";
-    statusText.className = "error";
-  }
-});
-
-// ===== ส่งรหัสไป ESP =====
-function openBox(){
-
-  const password = document.getElementById("pass").value;
-
-  if(password.length === 0){
-    alert("กรุณาใส่รหัส");
-    return;
-  }
-
-  client.publish("parcel/pass", password);
-
-  statusText.innerHTML = "📡 ส่งรหัสไปยังกล่องแล้ว...";
-  statusText.className = "wait";
+    client.publish("code", code);
+    console.log("Sent:", code);
 }
-
 </script>
 
 </body>
