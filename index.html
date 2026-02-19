@@ -43,8 +43,8 @@ button:hover{
   background:#00e676;
 }
 </style>
-
 </head>
+
 <body>
 
 <h1>Smart Parcel Box</h1>
@@ -67,7 +67,7 @@ function sendCode(){
         return;
     }
 
-    client.publish("code", code);
+    client.publish("verify", code);  // ส่งไปตรวจรหัส
     console.log("Sent:", code);
 }
 </script>
