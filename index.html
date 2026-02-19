@@ -42,6 +42,11 @@ button{
 button:hover{
   background:#00e676;
 }
+
+#status{
+  margin-top:20px;
+  font-size:18px;
+}
 </style>
 </head>
 
@@ -52,23 +57,31 @@ button:hover{
 <input type="text" id="codeInput" placeholder="ใส่รหัส"><br>
 <button onclick="sendCode()">ส่งรหัส</button>
 
+<div id="status"></div>
+
 <script>
 const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
 
 client.on("connect", function () {
-    console.log("Connected to MQTT");
+    console.log("Connected");
+    client.subscribe("notify");
+});
+
+client.on("message", function (topic, message) {
+    if(topic === "notify"){
+        document.getElementById("status").innerText = message.toString();
+    }
 });
 
 function sendCode(){
-    const code = document.getElementById("codeInput").value;
+    const code = document.getElementById("codeInput").value.trim();
 
     if(code === ""){
         alert("กรุณาใส่รหัส");
         return;
     }
 
-    client.publish("verify", code);  // ส่งไปตรวจรหัส
-    console.log("Sent:", code);
+    client.publish("verify", code);
 }
 </script>
 
