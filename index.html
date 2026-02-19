@@ -19,6 +19,15 @@ h1{
   font-size:28px;
 }
 
+input{
+  font-size:20px;
+  padding:10px;
+  width:180px;
+  text-align:center;
+  border-radius:8px;
+  border:none;
+}
+
 button{
   font-size:22px;
   padding:12px 25px;
@@ -27,6 +36,7 @@ button{
   background:#00c853;
   color:white;
   cursor:pointer;
+  margin-top:15px;
 }
 
 button:hover{
@@ -36,7 +46,18 @@ button:hover{
 #status{
   margin-top:30px;
   font-size:18px;
+}
+
+.success{
   color:#00e676;
+}
+
+.error{
+  color:#ff5252;
+}
+
+.wait{
+  color:#ffd740;
 }
 </style>
 </head>
@@ -44,28 +65,64 @@ button:hover{
 
 <h1>📦 Smart Parcel Box</h1>
 
+<input type="password" id="pass" placeholder="ใส่รหัส 4 หลัก">
+<br>
 <button onclick="openBox()">🔓 เปิดกล่อง</button>
 
-<div id="status">กำลังเชื่อมต่อ MQTT...</div>
+<div id="status" class="wait">กำลังเชื่อมต่อ MQTT...</div>
 
 <script>
 
+const statusText = document.getElementById("status");
+
+// ===== MQTT Connect =====
 const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
 
 client.on("connect", function () {
-  document.getElementById("status").innerHTML = "✅ เชื่อมต่อ MQTT แล้ว";
+  statusText.innerHTML = "✅ เชื่อมต่อ MQTT แล้ว";
+  statusText.className = "success";
+
+  client.subscribe("parcel/status");
 });
 
 client.on("error", function () {
-  document.getElementById("status").innerHTML = "❌ MQTT Error";
+  statusText.innerHTML = "❌ MQTT Error";
+  statusText.className = "error";
 });
 
-function openBox() {
+// ===== รับผลจาก ESP =====
+client.on("message", function(topic, message) {
 
-  client.publish("open", "test");
+  const msg = message.toString();
 
-  document.getElementById("status").innerHTML =
-    "📡 ส่งคำสั่งเปิดกล่องแล้ว...";
+  if(msg === "correct"){
+    statusText.innerHTML = "🔓 รหัสถูกต้อง กำลังเปิดกล่อง...";
+    statusText.className = "success";
+  }
+  else if(msg === "wrong"){
+    statusText.innerHTML = "❌ รหัสไม่ถูกต้อง";
+    statusText.className = "error";
+  }
+  else if(msg === "locked"){
+    statusText.innerHTML = "⛔ ระบบล็อกชั่วคราว";
+    statusText.className = "error";
+  }
+});
+
+// ===== ส่งรหัสไป ESP =====
+function openBox(){
+
+  const password = document.getElementById("pass").value;
+
+  if(password.length === 0){
+    alert("กรุณาใส่รหัส");
+    return;
+  }
+
+  client.publish("parcel/pass", password);
+
+  statusText.innerHTML = "📡 ส่งรหัสไปยังกล่องแล้ว...";
+  statusText.className = "wait";
 }
 
 </script>
